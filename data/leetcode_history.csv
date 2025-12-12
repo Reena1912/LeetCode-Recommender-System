@@ -1,0 +1,33 @@
+category,tagName,tagSlug,problemsSolved
+fundamental,Array,array,62
+fundamental,Matrix,matrix,3
+fundamental,String,string,15
+fundamental,Simulation,simulation,3
+fundamental,Enumeration,enumeration,2
+fundamental,Sorting,sorting,17
+fundamental,Stack,stack,3
+fundamental,Queue,queue,1
+fundamental,Linked List,linked-list,4
+fundamental,Two Pointers,two-pointers,27
+intermediate,Hash Table,hash-table,13
+intermediate,Ordered Set,ordered-set,1
+intermediate,Greedy,greedy,5
+intermediate,Binary Search,binary-search,12
+intermediate,Depth-First Search,depth-first-search,1
+intermediate,Breadth-First Search,breadth-first-search,2
+intermediate,Recursion,recursion,5
+intermediate,Sliding Window,sliding-window,6
+intermediate,Bit Manipulation,bit-manipulation,4
+intermediate,Math,math,22
+intermediate,Brainteaser,brainteaser,1
+intermediate,Database,database,34
+advanced,Backtracking,backtracking,1
+advanced,Quickselect,quickselect,1
+advanced,Dynamic Programming,dynamic-programming,16
+advanced,Divide and Conquer,divide-and-conquer,4
+advanced,Trie,trie,1
+advanced,Union Find,union-find,2
+advanced,Binary Indexed Tree,binary-indexed-tree,1
+advanced,Segment Tree,segment-tree,1
+advanced,Monotonic Stack,monotonic-stack,1
+advanced,Monotonic Queue,monotonic-queue,1
