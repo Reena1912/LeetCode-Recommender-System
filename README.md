@@ -1,40 +1,173 @@
-# LeetCode-Recommender-System
+# LeetCode Recommender System 🚀
 
-A personalized recommendation system that analyzes your LeetCode submissions, understands your strengths and weaknesses by topic, difficulty, and performance, and recommends the best next problems to practice.
+**Built a LeetCode recommender system that analyzes submission history, identifies weak topics using failure-rate analytics, and dynamically recommends unsolved problems with difficulty fallback logic. Deployed a FastAPI backend on Railway with live Swagger documentation.**.
 
-1. Fetch full LeetCode problem list using GraphQL API
+---
 
-2. save-skill-stats-csv.py = this file contains total history of how much solved in each skill category like category,tagName,tagSlug,problemsSolved(fundamental,Array,array,62) and creates a csv with the name "leetcode_history.csv"
+## 📌 What Does This Project Do?
 
-3. fetch_history.py = this script fetches the user's submission history from LeetCode like about id,title,slug,status,language,runtime,timestamp(1853674747,Increasing Triplet Subsequence,increasing-triplet-subsequence,Accepted,python3,14 ms,1765537402) and saves it as a CSV file named as "leetcode_submission_history.csv".
+* Reads LeetCode **submission history data**
+* Merges it with **problem metadata** (topic, difficulty)
+* Calculates **failure rates per topic**
+* Identifies **weak areas** (e.g., DFS, DP, Graphs)
+* Recommends **new, unsolved problems** from weak topics
+* Applies **difficulty fallback** (Easy → Medium → Hard)
+* Exposes functionality via a **FastAPI REST API**
 
-4. fetch_problem_list.py = this script fetches the complete list of problems from LeetCode and saves it as a CSV file named "leetcode_problem_list.csv"
+---
 
-5. merged.py = this script merges the user's submission history with the complete problem list from LeetCode based on the problem slug. the merged file name is "merged_full_history.csv". (id,title_x,slug,status,language,runtime,timestamp,title_y,difficulty,topics)
+## 🧠 Problem Statement
 
-6. bye running the merged.py file we will get all the data that we need
+LeetCode users often struggle to decide:
 
-7. topic_analysis.py = Problems can have multiple topics:array, greedy They are unnested using: df.explode("topics") Result:1. One row per (submission × topic) 2.Enables accurate per-topic statistics
-8. Failure Analysis-The data is grouped by:topics × status
-    This reveals:Total attempts per topic, Accepted vs failed counts, Weakest topics based on failure rate
+* *Which topic should I practice next?*
+* *Which problems match my weak areas?*
 
-9.  Topic Failure Rates- you now have a ranked list of topics you suck at the most- it sees you have an 83% failure rate in depth-first search
+This system automates that decision using **data-driven analysis** instead of random problem selection.
 
-
-10. next process is to build the recommendation logic
-
-
-11. steps 
- 1.  *Data Gathering*:  pulled two datasets - your personal submission history, and a master list of all LeetCode problems with their topics/difficulty.
- 2.  *Data Merging & Cleaning*: combined these two datasets into one, using the problem 'slug' to link them. This gave you a single file with every attempt you ever made, plus the topics for that problem.
- 3.  *The Analysis: This was the core insight.  calculated 'failure rate' for every single topic to find out *quantitatively where you struggle the most.
- 4.  *The Recommendation Logic*:  wrote a function that takes your #1 weakest topic, finds all the 'Easy' problems for it that you haven't solved yet, and picks one for you to practice.
- 5.  *Automation*:  tied it all together. The final script automatically finds your weakest spot from the analysis file and runs the recommender on it, printing out a targeted problem.
+---
 
 
+## ⚙️ Tech Stack
 
- Anyone can run it locally by cloning the repo, installing dependencies, adding their own LeetCode session cookie, and running the pipeline scripts. The recommender then automatically analyzes their submission history and suggests problems based on their weakest topics.
+* **Python 3.10+**
+* **FastAPI** – REST API framework
+* **Pandas** – Data processing & analysis
+* **Uvicorn** – ASGI server
+* **Railway** – Cloud deployment
+* **Swagger (OpenAPI)** – API documentation
+
+---
+
+## 🔍 How Recommendations Work
+
+1. Load submission history
+2. Merge with problem topic & difficulty dataset
+3. Compute per-topic:
+
+   * Attempts
+   * Failures
+   * Success rate
+4. Sort topics by **highest failure rate**
+5. For weakest topic:
+
+   * Recommend **unsolved Easy problems**
+   * If none → fallback to Medium
+   * If none → fallback to Hard
+
+This ensures **progressive learning**, not frustration.
+
+---
+
+## 🚀 API Endpoints
+
+### ✅ Health Check
+
+```
+GET /
+```
+
+Response:
+
+```json
+{ "status": "running" }
+```
+
+---
+
+### 🎯 Recommend Problems
+
+```
+GET /recommend
+```
+
+Response (example):
+
+```json
+{
+  "recommended_problems": [
+    {
+      "title": "Binary Tree Inorder Traversal",
+      "topic": "Depth First Search",
+      "difficulty": "Easy"
+    }
+  ]
+}
+```
+
+---
+
+## 📖 API Documentation (Swagger)
+
+Live Swagger UI:
+👉 [https://leetcode-recommender-system-production.up.railway.app/docs](https://leetcode-recommender-system-production.up.railway.app/docs)
+
+
+---
+
+## 🧪 How to Run Locally
+
+### 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/Reena1912/LeetCode-Recommender-System.git
+cd LeetCode-Recommender-System
+```
+
+### 2️⃣ Create Virtual Environment
+
+```bash
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+```
+
+### 3️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4️⃣ Start API Server
+
+```bash
+uvicorn api:app --reload
+```
+
+Visit:
+
+* API: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+* Docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
+---
+
+## ☁️ Deployment (Railway)
+
+Steps followed:
+
+1. Push code to GitHub
+2. Create Railway project
+3. Connect GitHub repository
+4. Set **Start Command**:
+
+```bash
+uvicorn api:app --host 0.0.0.0 --port $PORT
+```
+
+5. Railway auto-builds & deploys
+
+Live URL:
+👉 [https://leetcode-recommender-system-production.up.railway.app](https://leetcode-recommender-system-production.up.railway.app)
+
+---
 
 
 
+## 🧩 How Others Can Use This Project
 
+1. Fork the repo
+2. Add their own LeetCode submission CSVs locally
+3. Run analysis scripts
+4. Call `/recommend` endpoint
+5. Get personalized problem recommendations
+
+---
