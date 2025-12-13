@@ -1,0 +1,15 @@
+# ------------------------
+# Data files (CSV outputs)
+# ------------------------
+data/leetcode_problem_list.csv
+data/leetcode_history.csv
+data/leetcode_merged_dataset.csv
+data/leetcode_submission_history.csv
+data/merged_full_history.csv
+
+# Ignore environment files
+.env
+
+# Python cache
+__pycache__/
+*.pyc

@@ -9,8 +9,11 @@ import os
 # CONFIG
 
 
-SESSION = "<your_session_cookie_here>"
+SESSION = os.getenv("LEETCODE_SESSION")
 
+if not SESSION:
+    raise ValueError("LEETCODE_SESSION not set")
+  
 os.makedirs("data", exist_ok=True)
 
 url = "https://leetcode.com/graphql"

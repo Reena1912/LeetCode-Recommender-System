@@ -11,7 +11,10 @@ import os
 # CONFIG
 # ---------------------------
 
-SESSION = "<your_session_cookie_here>"
+SESSION = os.getenv("LEETCODE_SESSION")
+
+if not SESSION:
+    raise ValueError("LEETCODE_SESSION not set")
 headers = {
     "Content-Type": "application/json",
     "Cookie": f"LEETCODE_SESSION={SESSION}",
