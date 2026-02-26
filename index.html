@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LeetCode Recommender</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; padding: 40px 20px; }
+    h1 { text-align: center; color: #ffa116; font-size: 2rem; margin-bottom: 8px; }
+    p.sub { text-align: center; color: #888; margin-bottom: 32px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .btn-group { display: flex; gap: 12px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+    button { background: #ffa116; color: #000; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+    button:hover { background: #ffb84d; }
+    button.secondary { background: #1a1a2e; color: #ffa116; border: 1px solid #ffa116; }
+    button.secondary:hover { background: #ffa11622; }
+    .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .card h3 { color: #ffa116; margin-bottom: 8px; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-right: 8px; }
+    .EASY { background: #00b8a322; color: #00b8a3; }
+    .MEDIUM { background: #ffa11622; color: #ffa116; }
+    .HARD { background: #ef474322; color: #ef4743; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 16px; }
+    .stat-box { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; text-align: center; }
+    .stat-box .num { font-size: 2rem; font-weight: 700; color: #ffa116; }
+    .stat-box .label { font-size: 0.8rem; color: #888; margin-top: 4px; }
+    .topic-bar { margin-bottom: 10px; }
+    .topic-bar .name { font-size: 0.9rem; margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .bar-bg { background: #2a2a2a; border-radius: 6px; height: 8px; }
+    .bar-fill { background: #ffa116; height: 8px; border-radius: 6px; transition: width 0.5s; }
+    a { color: #ffa116; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    #output { margin-top: 8px; }
+    .loading { text-align: center; color: #888; padding: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ LeetCode Recommender</h1>
+    <p class="sub">Analyze your weak topics and get personalized problem recommendations</p>
+
+    <div class="btn-group">
+      <button onclick="getRecommendations()">🎯 Get Recommendations</button>
+      <button class="secondary" onclick="getStats()">📊 View My Stats</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const BASE = "http://127.0.0.1:8000";
+
+    async function getRecommendations() {
+      document.getElementById("output").innerHTML = '<p class="loading">Loading recommendations...</p>';
+      try {
+        const res = await fetch(`${BASE}/recommend?top=5`);
+        const data = await res.json();
+        if (data.message) {
+          document.getElementById("output").innerHTML = `<div class="card"><h3>🎉 ${data.message}</h3></div>`;
+          return;
+        }
+        let html = `<div class="card"><h3>🎯 Recommended Problems</h3></div>`;
+        data.recommended_problems.forEach((p, i) => {
+          html += `
+            <div class="card">
+              <h3>#${i+1} — <a href="${p.url}" target="_blank">${p.title}</a></h3>
+              <p style="margin-top:8px">
+                <span class="badge ${p.difficulty}">${p.difficulty}</span>
+                <span style="color:#888">Topic: ${p.topic}</span>
+              </p>
+            </div>`;
+        });
+        document.getElementById("output").innerHTML = html;
+      } catch(e) {
+        document.getElementById("output").innerHTML = '<div class="card"><h3>❌ Could not connect to API. Make sure backend is running.</h3></div>';
+      }
+    }
+
+    async function getStats() {
+      document.getElementById("output").innerHTML = '<p class="loading">Loading stats...</p>';
+      try {
+        const res = await fetch(`${BASE}/stats`);
+        const data = await res.json();
+        const s = data.summary;
+        let html = `
+          <div class="stat-grid">
+            <div class="stat-box"><div class="num">${s.total_attempts}</div><div class="label">Total Attempts</div></div>
+            <div class="stat-box"><div class="num">${s.total_solved}</div><div class="label">Solved</div></div>
+            <div class="stat-box"><div class="num">${s.total_failed}</div><div class="label">Failed</div></div>
+            <div class="stat-box"><div class="num">${s.overall_success_rate}%</div><div class="label">Success Rate</div></div>
+          </div>
+          <div class="card">
+            <h3 style="margin-bottom:16px">📉 Weakest Topics</h3>`;
+        data.weakest_topics.forEach(t => {
+          html += `
+            <div class="topic-bar">
+              <div class="name"><span>${t.topic}</span><span>${t.failure_rate}% failure</span></div>
+              <div class="bar-bg"><div class="bar-fill" style="width:${t.failure_rate}%"></div></div>
+            </div>`;
+        });
+        html += `</div>`;
+        document.getElementById("output").innerHTML = html;
+      } catch(e) {
+        document.getElementById("output").innerHTML = '<div class="card"><h3>❌ Could not connect to API.</h3></div>';
+      }
+    }
+  </script>
+</body>
+</html>
